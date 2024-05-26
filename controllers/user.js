@@ -15,18 +15,23 @@ async function handlePostUserSignup(req, res) {
     email,
     password,
   });
-  return res.redirect("/");
+  return res.redirect("/user/signin");
 }
 
 async function handlePostUserSignin(req, res) {
   const { email, password } = req.body;
   try {
-    const userObj = await UserDb.matchPassword(email, password);
-    console.log("User", userObj);
-    return res.redirect("/");
+    const token = await UserDb.matchPasswordAndGenerateToken(email, password);
+    return res.cookie("token", token).redirect("/");
   } catch (error) {
-    return res.render("signin");
+    return res.render("signin", {
+      error: "Invalid email or password",
+    });
+    S;
   }
+}
+async function handleGetUserLogout(req, res) {
+  res.clearCookie("token").redirect("/");
 }
 
 module.exports = {
@@ -34,4 +39,5 @@ module.exports = {
   handleGetUserSignup,
   handlePostUserSignup,
   handlePostUserSignin,
+  handleGetUserLogout,
 };
