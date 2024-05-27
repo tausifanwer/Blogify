@@ -27,11 +27,10 @@ async function handlePostUserSignin(req, res) {
     return res.render("signin", {
       error: "Invalid email or password",
     });
-    S;
   }
 }
 async function handleGetUserLogout(req, res) {
-  res.clearCookie("token").redirect("/");
+  res.clearCookie("token").redirect("signin");
 }
 
 module.exports = {

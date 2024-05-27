@@ -32,7 +32,13 @@ app.use("/user", userRoute);
 app.use("/blog", blogRoute);
 //routes
 app.get("/", async (req, res) => {
-  const allBlog = await Blog.find({});
+  if (!req.user) {
+    return res.redirect("/user/signin");
+  }
+  const id = req.user._id;
+  console.log(id);
+  const allBlog = await Blog.find({ createdBy: id });
+  console.log(allBlog);
   res.render("home", {
     user: req.user,
     blogs: allBlog,
