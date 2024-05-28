@@ -14,6 +14,10 @@ const blogSchema = new Schema(
       type: String,
       required: false,
     },
+    postvisiblity: {
+      type: String,
+      required: true,
+    },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: "user",

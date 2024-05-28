@@ -16,17 +16,22 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 //GET
 async function handleGetAddNew(req, res) {
-  console.log(req.user);
   return res.render("addBlog", {
     user: req.user,
   });
 }
+async function handleGetViewAll(req, res) {
+  if (!req.user) return res.redirect("/");
+  const allBlogs = await BlogDb.find({ createdBy: req.user._id });
 
+  return res.render("allBlog", {
+    user: req.user,
+    blogs: allBlogs,
+  });
+}
 async function handleGETIdView(req, res) {
   const blog = await BlogDb.findById(req.params.id).populate("createdBy");
   const comment = await CommentDb.find({ blogId: blog }).populate("createdBy");
-  console.log(comment);
-  console.log(blog);
   return res.render("blog", {
     user: req.user,
     blog: blog,
@@ -36,13 +41,14 @@ async function handleGETIdView(req, res) {
 
 //POST
 async function handlePostAddNew(req, res) {
-  const { title, body } = req.body;
+  const { title, body, postvisiblity } = req.body;
   const coverImageURL = req.file
     ? `/uploads/${req.file.filename}`
     : "/images/blog-image.png";
   const blog = await BlogDb.create({
     body,
     title,
+    postvisiblity,
     createdBy: req.user._id,
     coverImageURL: coverImageURL,
   });
@@ -65,7 +71,6 @@ async function handleDeleteBlog(req, res) {
   try {
     const uploadsImage = path.resolve(`./public/${blog.coverImageURL}`);
     if (uploadsImage !== defaultImage) {
-      console.log("if");
       fs.unlinkSync(path.resolve(uploadsImage));
       return res.redirect("/");
     } else {
@@ -82,4 +87,5 @@ module.exports = {
   handleDeleteBlog,
   handleGETIdView,
   handlePostComment,
+  handleGetViewAll,
 };
