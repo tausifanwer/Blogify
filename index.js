@@ -8,11 +8,11 @@ const Blog = require("./models/blog");
 const cookieParser = require("cookie-parser");
 const { checkForAuthenticationCookies } = require("./middlewares/auth");
 const PORT = process.env.PORT || 5000;
-const mongoURL = process.env.MONGO_URL;
+// const mongoURL = process.env.MONGO_URL;
 require("dotenv").config();
 //mongo connection
 mongoose
-  .connect(mongoURL, {
+  .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     retryWrites: true, // Set retryWrites as a boolean
