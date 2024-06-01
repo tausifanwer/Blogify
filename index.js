@@ -45,11 +45,15 @@ app.get("/", async (req, res) => {
 
   // const id = req.user._id;
   // console.log(id);
-  const allBlog = await Blog.find({ postvisiblity: "public" });
-  return res.render("home", {
-    user: req.user,
-    blogs: allBlog,
-  });
+  try {
+    const allBlog = await Blog.find({ postvisiblity: "public" });
+    return res.render("home", {
+      user: req.user,
+      blogs: allBlog,
+    });
+  } catch (error) {
+    console.log(error);
+  }
 });
 
 app.listen(PORT, () => {
