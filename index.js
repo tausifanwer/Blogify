@@ -16,8 +16,6 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
     retryWrites: true, // Set retryWrites as a boolean
-    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
-    socketTimeoutMS: 45000,
   })
   .then(() => {
     console.log("mongoose connected!--");
@@ -25,6 +23,19 @@ mongoose
   .catch((err) => {
     console.log(err, "Some ERROR TO CONNECT MONGOOSE");
   });
+const db = mongoose.connection;
+
+db.on("connected", () => {
+  console.log("Connected to MongoDB server");
+});
+
+db.on("error", (err) => {
+  console.error("MongoDB connection error:", err);
+});
+
+db.on("disconnected", () => {
+  console.log("MongoDB disconnected");
+});
 //middleware
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
