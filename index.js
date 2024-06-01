@@ -12,10 +12,7 @@ const PORT = process.env.PORT || 5000;
 require("dotenv").config();
 //mongo connection
 mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
+  .connect(process.env.MONGO_URL)
   .then(() => {
     console.log("mongoose connected!--");
   })
