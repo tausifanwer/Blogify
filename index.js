@@ -8,14 +8,16 @@ const Blog = require("./models/blog");
 const cookieParser = require("cookie-parser");
 const { checkForAuthenticationCookies } = require("./middlewares/auth");
 const PORT = process.env.PORT || 5000;
-
+const mongoURL = process.env.MONGO_URL;
 require("dotenv").config();
 //mongo connection
 mongoose
-  .connect(process.env.MONGO_URL, {
+  .connect(mongoURL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     retryWrites: true, // Set retryWrites as a boolean
+    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+    socketTimeoutMS: 45000,
   })
   .then(() => {
     console.log("mongoose connected!--");
