@@ -21,6 +21,12 @@
         float: right;
         display: block;
       }
+      .button-tag {
+        display: inline;
+        text-align: center;
+        font-size: 9px;
+        margin-left: 5px;
+      }
     </style>
   </head>
   <body>
@@ -34,12 +40,17 @@
         <div class="card-body">
           <h5 class="card-title">Title: <%= blog.title %></h5>
 
-          <a href="/blog/<%=blog._id  %>" class="btn btn-primary">View</a>
+          <a href="/blog/<%=blog._id  %>" class="btn btn-primary button-tag"
+            >View</a
+          >
           <a
             href="/blog/delete/<%=blog._id  %>"
             data-method="delete"
-            class="btn btn-danger"
+            class="btn btn-danger button-tag"
             >Delete</a
+          >
+          <a href="/blog/edit/<%=blog.id %>" class="btn btn-info button-tag"
+            >Edit</a
           >
           <span><%= blog. postvisiblity %></span>
         </div>

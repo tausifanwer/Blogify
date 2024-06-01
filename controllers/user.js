@@ -10,12 +10,19 @@ async function handleGetUserSignup(req, res) {
 
 async function handlePostUserSignup(req, res) {
   const { fullName, email, password } = req.body;
-  await UserDb.create({
-    fullName,
-    email,
-    password,
-  });
-  return res.redirect("/user/signin");
+
+  try {
+    await UserDb.create({
+      fullName,
+      email,
+      password,
+    });
+    return res.redirect("/user/signin");
+  } catch (error) {
+    return res.render("signup", {
+      errorSignUp: "Something went wrong. Please try again ",
+    });
+  }
 }
 
 async function handlePostUserSignin(req, res) {
@@ -25,7 +32,7 @@ async function handlePostUserSignin(req, res) {
     return res.cookie("token", token).redirect("/");
   } catch (error) {
     return res.render("signin", {
-      error: "Invalid email or password",
+      errorSignIn: "Invalid email or password",
     });
   }
 }

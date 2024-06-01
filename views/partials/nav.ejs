@@ -50,7 +50,12 @@
     </div>
   </div>
 </nav>
-<% if (locals.error) { %>
-<div class="alert alert-danger" role="alert"><%= locals.error %></div>
-
+<% if (locals.errorSignIn) { %>
+<div class="alert alert-danger mt-2" role="alert">
+  <%= locals.errorSignIn %>
+</div>
+<% } %> <% if (locals.errorSignUp) { %>
+<div class="alert alert-danger mt-2" role="alert">
+  <%= locals.errorSignUp %>
+</div>
 <% } %>

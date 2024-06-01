@@ -12,11 +12,13 @@ function createTokenForUser(user) {
   const token = JWT.sign(payload, secret, {
     expiresIn: "1d",
   });
+  console.log("crete token");
   return token;
 }
 
 function validateToken(token) {
   const payload = JWT.verify(token, secret);
+  console.log("validate token");
   return payload;
 }
 

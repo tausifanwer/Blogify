@@ -7,11 +7,15 @@ const blogRoute = require("./routes/blog");
 const Blog = require("./models/blog");
 const cookieParser = require("cookie-parser");
 const { checkForAuthenticationCookies } = require("./middlewares/auth");
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
+require("dotenv").config();
 //mongo connection
 mongoose
-  .connect("mongodb://127.0.0.1:27017/blogify")
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     console.log("mongoose connected!--");
   })
@@ -39,8 +43,7 @@ app.get("/", async (req, res) => {
   // const id = req.user._id;
   // console.log(id);
   const allBlog = await Blog.find({ postvisiblity: "public" });
-
-  res.render("home", {
+  return res.render("home", {
     user: req.user,
     blogs: allBlog,
   });

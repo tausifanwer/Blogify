@@ -3,6 +3,7 @@ const CommentDb = require("../models/comment");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { updateOne } = require("../models/user");
 //Multer
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -36,6 +37,15 @@ async function handleGETIdView(req, res) {
     user: req.user,
     blog: blog,
     comments: comment,
+  });
+}
+async function handleGetEditBlog(req, res) {
+  const { id } = req.params;
+  const blog = await BlogDb.findById(id).populate("createdBy");
+
+  return res.render("editBlog", {
+    user: req.user,
+    blog: blog,
   });
 }
 
@@ -80,6 +90,37 @@ async function handleDeleteBlog(req, res) {
     console.log(error);
   }
 }
+
+async function handleDeleteBlogComment(req, res) {
+  const { id } = req.params;
+  const commentId = await CommentDb.findById({ _id: id });
+  await CommentDb.findByIdAndDelete(id);
+  try {
+    await CommentDb.findByIdAndDelete(id);
+    return res.redirect(`/blog/${commentId.blogId}`);
+  } catch (error) {
+    console.log(error);
+    return res.redirect("/");
+  }
+}
+
+//Update
+async function handlePutEditBlog(req, res) {
+  const { title, body, postvisiblity } = req.body;
+  const { id } = req.params;
+  const blog = await BlogDb.findByIdAndUpdate(
+    id,
+    {
+      title,
+      body,
+      postvisiblity,
+    },
+    { new: true }
+  );
+  console.log(blog);
+  return res.redirect("/");
+}
+
 module.exports = {
   handleGetAddNew,
   handlePostAddNew,
@@ -88,4 +129,7 @@ module.exports = {
   handleGETIdView,
   handlePostComment,
   handleGetViewAll,
+  handleDeleteBlogComment,
+  handlePutEditBlog,
+  handleGetEditBlog,
 };
