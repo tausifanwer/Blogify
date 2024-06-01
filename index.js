@@ -16,6 +16,8 @@ mongoose
     useNewUrlParser: true,
     useUnifiedTopology: true,
     retryWrites: true, // Set retryWrites as a boolean
+    serverSelectionTimeoutMS: 30000, // Increase timeout to 30 seconds
+    socketTimeoutMS: 45000,
   })
   .then(() => {
     console.log("mongoose connected!--");
