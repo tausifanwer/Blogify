@@ -41,7 +41,7 @@ db.on("disconnected", () => {
 //middleware
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
-
+// app.use("/public/images", express.static("public"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
@@ -59,13 +59,21 @@ app.get("/", async (req, res) => {
   // const id = req.user._id;
   // console.log(id);
   try {
-    const allBlog = await Blog.find({ postvisiblity: "public" });
+    let page = Number(req.query.page) || 1;
+    let limit = Number(req.query.limit) || 8;
+    let skip = (page - 1) * limit;
+    const all = await Blog.find({ postvisiblity: "public" })
+      .skip(skip)
+      .limit(limit);
     return res.render("home", {
       user: req.user,
-      blogs: allBlog,
+      all: all,
+      page: page,
+      limit: limit,
     });
   } catch (error) {
     console.log(error);
+    return res.render("home");
   }
 });
 

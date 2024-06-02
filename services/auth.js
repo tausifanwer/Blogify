@@ -1,5 +1,6 @@
 const JWT = require("jsonwebtoken");
-const secret = "0#Tausif@123$0";
+require("dotenv").config();
+const secret = process.env.SECRET;
 
 function createTokenForUser(user) {
   const payload = {
@@ -12,6 +13,7 @@ function createTokenForUser(user) {
   const token = JWT.sign(payload, secret, {
     expiresIn: "1d",
   });
+
   console.log("crete token");
   return token;
 }

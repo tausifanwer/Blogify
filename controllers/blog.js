@@ -3,6 +3,7 @@ const CommentDb = require("../models/comment");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+// const paginate = require("express-paginate");
 const { updateOne } = require("../models/user");
 //Multer
 const storage = multer.diskStorage({
@@ -14,7 +15,23 @@ const storage = multer.diskStorage({
     cb(null, fileName);
   },
 });
-const upload = multer({ storage: storage });
+
+const upload = multer({
+  storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (
+      file.mimetype === "image/jpg" ||
+      file.mimetype === "image/png" ||
+      file.mimetype === "image/jpeg"
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type"));
+    }
+  },
+  limits: { fileSize: 2000000 },
+});
+
 //GET
 async function handleGetAddNew(req, res) {
   return res.render("addBlog", {
@@ -22,12 +39,19 @@ async function handleGetAddNew(req, res) {
   });
 }
 async function handleGetViewAll(req, res) {
+  let page = Number(req.query.page) || 1;
+  let limit = Number(req.query.limit) || 6;
+  let skip = (page - 1) * limit;
   if (!req.user) return res.redirect("/");
-  const allBlogs = await BlogDb.find({ createdBy: req.user._id });
-
+  const allBlogs = await BlogDb.find({ createdBy: req.user._id })
+    .skip(skip)
+    .limit(limit);
+  if (allBlogs.length === 0) return res.redirect("/blog/view-all");
   return res.render("allBlog", {
     user: req.user,
     blogs: allBlogs,
+    page: page,
+    limit: limit,
   });
 }
 async function handleGETIdView(req, res) {
@@ -42,27 +66,56 @@ async function handleGETIdView(req, res) {
 async function handleGetEditBlog(req, res) {
   const { id } = req.params;
   const blog = await BlogDb.findById(id).populate("createdBy");
-
   return res.render("editBlog", {
     user: req.user,
     blog: blog,
   });
 }
 
+async function handleGetPagination(req, res) {
+  try {
+    let page = Number(req.query.page) || 1;
+    let limit = Number(req.query.limit) || 8;
+    let skip = (page - 1) * limit;
+    console.log(page, limit);
+    const all = await BlogDb.find({ postvisiblity: "public" })
+      .skip(skip)
+      .limit(limit);
+    if (all.length === 0) return res.redirect("/");
+    return res.render("home", {
+      user: req.user,
+      all: all,
+      page: page,
+      limit: limit,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Server  Error",
+    });
+  }
+}
+
 //POST
 async function handlePostAddNew(req, res) {
   const { title, body, postvisiblity } = req.body;
-  const coverImageURL = req.file
-    ? `/uploads/${req.file.filename}`
-    : "/images/blog-image.png";
-  const blog = await BlogDb.create({
-    body,
-    title,
-    postvisiblity,
-    createdBy: req.user._id,
-    coverImageURL: coverImageURL,
-  });
-  return res.redirect(`/blog/${blog._id}`);
+  try {
+    const coverImageURL = req.file
+      ? `/uploads/${req.file.filename}`
+      : "/images/blog-image.png";
+
+    const blog = await BlogDb.create({
+      body,
+      title,
+      postvisiblity,
+      createdBy: req.user._id,
+      coverImageURL: coverImageURL,
+    });
+    return res.redirect(`/blog/${blog._id}`);
+  } catch (error) {
+    console.log(error);
+    return res.render("addBlog");
+  }
 }
 async function handlePostComment(req, res) {
   await CommentDb.create({
@@ -132,4 +185,5 @@ module.exports = {
   handleDeleteBlogComment,
   handlePutEditBlog,
   handleGetEditBlog,
+  handleGetPagination,
 };

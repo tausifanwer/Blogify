@@ -7,7 +7,12 @@
   <body>
     <%- include('./partials/nav') %>
     <div class="container mt-3">
-      <form action="/blog" method="post" enctype="multipart/form-data">
+      <form
+        action="/blog"
+        method="post"
+        enctype="multipart/form-data"
+        class="forms"
+      >
         <div class="mb-3">
           <label for="coverImageURL" class="form-lable">Cover Image</label>
           <input
@@ -66,5 +71,12 @@
       </form>
     </div>
     <%- include('./partials/script') %>
+    <script>
+      const file = document.querySelector(".file-image");
+      const form = document.querySelector(".forms");
+      form.addEventListener("click", () => {
+        file.style.display = "none";
+      });
+    </script>
   </body>
 </html>

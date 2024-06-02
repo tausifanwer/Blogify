@@ -7,7 +7,7 @@
   <body>
     <%- include('./partials/nav') %>
     <div class="container mt-5">
-      <form action="/user/signin" method="post">
+      <form action="/user/signin" method="post" class="forms">
         <div class="mb-3">
           <label for="email" class="form-label">Email address</label>
           <input
@@ -34,5 +34,12 @@
       </form>
     </div>
     <%- include('./partials/script') %>
+    <script>
+      const form = document.querySelector(".forms");
+      const signErr = document.querySelector(".signin-err");
+      form.addEventListener("click", (e) => {
+        signErr.style.display = " none";
+      });
+    </script>
   </body>
 </html>

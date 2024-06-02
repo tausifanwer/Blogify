@@ -27,18 +27,35 @@
         font-size: 9px;
         margin-left: 5px;
       }
+      .pagination {
+        display: flex;
+        justify-content: center;
+        margin-block: 3rem;
+      }
+      .next {
+        margin-inline: 35rem;
+      }
+      .prev {
+        margin-inline: 31rem;
+      }
+      .title {
+        overflow: hidden;
+        white-space: nowrap;
+        padding-bottom: 2px;
+        text-overflow: ellipsis;
+      }
     </style>
   </head>
   <body>
     <%- include('./partials/nav') %>
     <div class="container mt-3 card-container">
-      <%blogs.forEach(blog => { %>
+      <%all.forEach(blog => { %>
       <div class="card" style="width: 18rem">
         <% if (blog.coverImageURL) { %>
         <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="..." />
         <% }%>
         <div class="card-body">
-          <h5 class="card-title">Title: <%= blog.title %></h5>
+          <h5 class="card-title title">Title: <%= blog.title %></h5>
 
           <a href="/blog/<%=blog._id  %>" class="btn btn-primary button-tag"
             >View</a
@@ -63,9 +80,28 @@
           <span><%= blog. postvisiblity %></span>
         </div>
       </div>
-
       <% }) %>
     </div>
+
+    <!-- pagination -->
+    <nav aria-label="Page navigation example" class="pagination">
+      <ul class="pagination">
+        <li class="page-item prev">
+          <a
+            class="page-link"
+            href="/blog/page?page=<%= page-1 %>&limit=<%= limit %>"
+            >Previous</a
+          >
+        </li>
+        <li class="page-item next">
+          <a
+            class="page-link"
+            href="/blog/page?page=<%= page+1 %>&limit=<%= limit %>"
+            >Next</a
+          >
+        </li>
+      </ul>
+    </nav>
     <%-include('./partials/script') %>
   </body>
 </html>

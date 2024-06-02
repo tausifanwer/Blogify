@@ -7,7 +7,7 @@
   <body>
     <%- include('./partials/nav') %>
     <div class="container mt-5">
-      <form action="/user/signup" method="post">
+      <form action="/user/signup" method="post" class="forms">
         <div class="mb-3">
           <label for="fullName" class="form-label">Full Name</label>
           <input
@@ -47,5 +47,12 @@
       </form>
     </div>
     <%- include('./partials/script') %>
+    <script>
+      const form = document.querySelector(".forms");
+      const signupErr = document.querySelector(".signup-err");
+      form.addEventListener("click", (e) => {
+        signupErr.style.display = " none";
+      });
+    </script>
   </body>
 </html>

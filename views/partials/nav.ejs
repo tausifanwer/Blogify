@@ -51,11 +51,19 @@
   </div>
 </nav>
 <% if (locals.errorSignIn) { %>
-<div class="alert alert-danger mt-2" role="alert">
+<div class="alert alert-danger mt-2 signin-err" role="alert">
   <%= locals.errorSignIn %>
 </div>
 <% } %> <% if (locals.errorSignUp) { %>
-<div class="alert alert-danger mt-2" role="alert">
+<div class="alert alert-danger mt-2 signup-err" role="alert">
   <%= locals.errorSignUp %>
 </div>
-<% } %>
+<% } %> <% if (locals.user) { %> <% if (locals.errorLimitImage) { %>
+<div class="alert alert-danger mt-2 file-image" role="alert">
+  <%= locals.errorLimitImage %>
+</div>
+<% } %> <% } %> <% if (locals.user) { %> <% if (locals.message) { %>
+<div class="alert alert-danger mt-2 file-image" role="alert">
+  <%= locals.message %>
+</div>
+<% } %> <% } %>
