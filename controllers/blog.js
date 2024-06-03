@@ -77,7 +77,6 @@ async function handleGetPagination(req, res) {
     let page = Number(req.query.page) || 1;
     let limit = Number(req.query.limit) || 8;
     let skip = (page - 1) * limit;
-    console.log(page, limit);
     const all = await BlogDb.find({ postvisiblity: "public" })
       .skip(skip)
       .limit(limit);
@@ -99,6 +98,8 @@ async function handleGetPagination(req, res) {
 //POST
 async function handlePostAddNew(req, res) {
   const { title, body, postvisiblity } = req.body;
+  const sTitle = title.toLowerCase();
+  console.log(sTitle);
   try {
     const coverImageURL = req.file
       ? `/uploads/${req.file.filename}`
@@ -107,6 +108,7 @@ async function handlePostAddNew(req, res) {
     const blog = await BlogDb.create({
       body,
       title,
+      search: sTitle,
       postvisiblity,
       createdBy: req.user._id,
       coverImageURL: coverImageURL,

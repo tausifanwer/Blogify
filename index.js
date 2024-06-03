@@ -8,7 +8,6 @@ const Blog = require("./models/blog");
 const cookieParser = require("cookie-parser");
 const { checkForAuthenticationCookies } = require("./middlewares/auth");
 const PORT = process.env.PORT || 5000;
-// const mongoURL = process.env.MONGO_URL;
 require("dotenv").config();
 //mongo connection
 mongoose
@@ -52,12 +51,6 @@ app.use("/user", userRoute);
 app.use("/blog", blogRoute);
 //routes
 app.get("/", async (req, res) => {
-  // if (!req.user) {
-  //   return res.redirect("/user/signin");
-  // }
-
-  // const id = req.user._id;
-  // console.log(id);
   try {
     let page = Number(req.query.page) || 1;
     let limit = Number(req.query.limit) || 8;
@@ -74,6 +67,60 @@ app.get("/", async (req, res) => {
   } catch (error) {
     console.log(error);
     return res.render("home");
+  }
+});
+
+app.get("/search", async (req, res) => {
+  const { title } = req.query;
+  const user = req.user;
+  console.log(user);
+  try {
+    if (user) {
+      const searchTi = await Blog.find({
+        title: { $regex: title },
+      });
+      const searchSe = await Blog.find({
+        search: { $regex: title },
+      });
+
+      if (searchSe.length !== 0) {
+        return res.json({
+          searchSe,
+          msg: "Search",
+        });
+      } else if (searchTi.length !== 0) {
+        return res.json({
+          searchTi,
+          meg: "Title",
+        });
+      } else {
+        return res.json({
+          Search: "Search not Founded",
+        });
+      }
+    } else {
+      const searchTi = await Blog.find({
+        postvisiblity: "public",
+        title: { $regex: title },
+      });
+      const searchSe = await Blog.find({
+        postvisiblity: "public",
+        search: { $regex: title },
+      });
+      if (searchSe.length !== 0) {
+        return res.json(searchSe);
+      } else if (searchTi.length !== 0) {
+        return res.json(searchTi);
+      } else {
+        return res.json({
+          Search: "Search not Founded",
+        });
+      }
+    }
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server Error",
+    });
   }
 });
 

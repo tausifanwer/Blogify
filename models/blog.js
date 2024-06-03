@@ -6,6 +6,9 @@ const blogSchema = new Schema(
       type: String,
       required: true,
     },
+    search: {
+      type: String,
+    },
     body: {
       type: String,
       required: true,
