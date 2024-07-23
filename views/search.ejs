@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <%- include('./partials/head') %>
-    <title>Homepage</title>
+    <title>Search</title>
     <style>
       .card-container {
         display: flex;
@@ -44,12 +44,34 @@
         padding-bottom: 2px;
         text-overflow: ellipsis;
       }
+      form {
+        margin-top: 6px;
+      }
     </style>
   </head>
   <body>
-    <%- include('./search') %>
+    <%- include('./partials/nav') %>
+    <div>
+      <form
+        action="/search?title=<%=locals.title %>"
+        method="get"
+        class="d-flex"
+        role="search"
+      >
+        <input
+          class="form-control me-2"
+          type="search"
+          placeholder="Search"
+          aria-label="Search"
+          name="title"
+        />
+        <button class="btn btn-outline-success" type="submit">Search</button>
+      </form>
+    </div>
+    <% if (locals.alll) { %>
     <div class="container mt-3 card-container">
-      <%all.forEach(blog => { %>
+      <%alll.forEach(blog => { %>
+
       <div class="card" style="width: 18rem">
         <% if (blog.coverImageURL) { %>
         <img src="<%= blog.coverImageURL %>" class="card-img-top" alt="..." />
@@ -82,8 +104,6 @@
       </div>
       <% }) %>
     </div>
-
-    <!-- pagination -->
-    <%- include("./partials/pagination") %> <%-include('./partials/script') %>
+    <%-include('./partials/script') %> <% } %>
   </body>
 </html>

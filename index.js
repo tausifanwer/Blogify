@@ -70,28 +70,44 @@ app.get("/", async (req, res) => {
   }
 });
 
+// app.get("/search", async (req, res) => {
+//   const title = req.query.title;
+//   return res.render("search", {
+//     title: title,
+//   });
+// });
+
 app.get("/search", async (req, res) => {
-  const { title } = req.query;
+  const title = req.query.title;
+  console.log(req.query.title + "..........");
   const user = req.user;
-  console.log(user);
+  // console.log(user);
+  let alll = [];
+
   try {
     if (user) {
       const searchTi = await Blog.find({
+        postvisiblity: "public",
         title: { $regex: title },
       });
       const searchSe = await Blog.find({
+        postvisiblity: "public",
         search: { $regex: title },
       });
 
       if (searchSe.length !== 0) {
-        return res.json({
-          searchSe,
-          msg: "Search",
+        alll = searchSe;
+        return res.render("search", {
+          user: req.user,
+          alll: alll,
+          title: title,
         });
       } else if (searchTi.length !== 0) {
-        return res.json({
-          searchTi,
-          meg: "Title",
+        alll = searchTi;
+        return res.render("search", {
+          user: req.user,
+          alll: alll,
+          title: title,
         });
       } else {
         return res.json({
@@ -108,9 +124,17 @@ app.get("/search", async (req, res) => {
         search: { $regex: title },
       });
       if (searchSe.length !== 0) {
-        return res.json(searchSe);
+        alll = searchSe;
+        return res.render("search", {
+          alll: alll,
+          title: title,
+        });
       } else if (searchTi.length !== 0) {
-        return res.json(searchTi);
+        alll = searchTi;
+        return res.render("search", {
+          alll: alll,
+          title: title,
+        });
       } else {
         return res.json({
           Search: "Search not Founded",
@@ -119,7 +143,7 @@ app.get("/search", async (req, res) => {
     }
   } catch (error) {
     return res.status(500).json({
-      message: "Server Error",
+      message: error,
     });
   }
 });

@@ -3,6 +3,8 @@ const CommentDb = require("../models/comment");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const { v2 } = require("cloudinary");
+const { uploadOnCloudinary } = require("../utils/cloudinary");
 // const paginate = require("express-paginate");
 const { updateOne } = require("../models/user");
 //Multer
@@ -101,17 +103,19 @@ async function handlePostAddNew(req, res) {
   const sTitle = title.toLowerCase();
   console.log(sTitle);
   try {
-    const coverImageURL = req.file
-      ? `/uploads/${req.file.filename}`
-      : "/images/blog-image.png";
+    console.log(req.file);
+    const coverImageURL = await uploadOnCloudinary(req.file.path);
 
+    console.log(coverImageURL);
     const blog = await BlogDb.create({
       body,
       title,
       search: sTitle,
       postvisiblity,
       createdBy: req.user._id,
-      coverImageURL: coverImageURL,
+      coverImageURL: coverImageURL
+        ? coverImageURL.url
+        : "/images/blog-image.png",
     });
     return res.redirect(`/blog/${blog._id}`);
   } catch (error) {
@@ -134,9 +138,17 @@ async function handleDeleteBlog(req, res) {
   const blog = await BlogDb.findByIdAndDelete(id);
   const defaultImage = path.resolve("./public/images/blog-image.png");
   try {
-    const uploadsImage = path.resolve(`./public/${blog.coverImageURL}`);
+    const uploadsImage = blog.coverImageURL;
     if (uploadsImage !== defaultImage) {
-      fs.unlinkSync(path.resolve(uploadsImage));
+      let a = uploadsImage.split("/");
+      let b = a[a.length - 1].split(".")[0] + ".jpg";
+      v2.api
+        .delete_resources([b], {
+          type: "upload",
+          resource_type: "image",
+        })
+        .then(console.log);
+
       return res.redirect("/");
     } else {
       return res.redirect("/");
