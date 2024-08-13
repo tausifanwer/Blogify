@@ -44,10 +44,11 @@ async function handleGetViewAll(req, res) {
   let page = Number(req.query.page) || 1;
   let limit = Number(req.query.limit) || 6;
   let skip = (page - 1) * limit;
-  if (!req.user) return res.redirect("/");
+  // if (!req.user) return res.redirect("/");
   const allBlogs = await BlogDb.find({ createdBy: req.user._id })
     .skip(skip)
     .limit(limit);
+  if (!req.user || allBlogs.length === 0) return res.redirect("/");
   if (allBlogs.length === 0) return res.redirect("/blog/view-all");
   return res.render("allBlog", {
     user: req.user,
