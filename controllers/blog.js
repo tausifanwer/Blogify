@@ -36,6 +36,9 @@ const upload = multer({
 
 //GET
 async function handleGetAddNew(req, res) {
+  if (!req.user) {
+    return res.render("signin");
+  }
   return res.render("addBlog", {
     user: req.user,
   });
@@ -44,12 +47,12 @@ async function handleGetViewAll(req, res) {
   let page = Number(req.query.page) || 1;
   let limit = Number(req.query.limit) || 6;
   let skip = (page - 1) * limit;
-  // if (!req.user) return res.redirect("/");
+  if (!req.user) return res.redirect("/");
   const allBlogs = await BlogDb.find({ createdBy: req.user._id })
     .skip(skip)
     .limit(limit);
-  if (!req.user || allBlogs.length === 0) return res.redirect("/");
-  if (allBlogs.length === 0) return res.redirect("/blog/view-all");
+  if (allBlogs.length === 0) return res.redirect("/blog/add-new");
+  // if (allBlogs.length === 0) return res.redirect("/blog/add-new");
   return res.render("allBlog", {
     user: req.user,
     blogs: allBlogs,
@@ -58,6 +61,9 @@ async function handleGetViewAll(req, res) {
   });
 }
 async function handleGETIdView(req, res) {
+  if (!req.user) {
+    return res.render("signin");
+  }
   const blog = await BlogDb.findById(req.params.id).populate("createdBy");
   const comment = await CommentDb.find({ blogId: blog }).populate("createdBy");
   return res.render("blog", {
@@ -67,6 +73,9 @@ async function handleGETIdView(req, res) {
   });
 }
 async function handleGetEditBlog(req, res) {
+  if (!req.user) {
+    return res.render("signin");
+  }
   const { id } = req.params;
   const blog = await BlogDb.findById(id).populate("createdBy");
   return res.render("editBlog", {
@@ -105,8 +114,10 @@ async function handlePostAddNew(req, res) {
   console.log(sTitle);
   try {
     console.log(req.file);
-    const coverImageURL = await uploadOnCloudinary(req.file.path);
-
+    let coverImageURL = undefined;
+    if (req.file) {
+      coverImageURL = await uploadOnCloudinary(req.file.path);
+    }
     console.log(coverImageURL);
     const blog = await BlogDb.create({
       body,
@@ -121,7 +132,9 @@ async function handlePostAddNew(req, res) {
     return res.redirect(`/blog/${blog._id}`);
   } catch (error) {
     console.log(error);
-    return res.render("addBlog");
+    return res.render("addBlog", {
+      user: req.user,
+    });
   }
 }
 async function handlePostComment(req, res) {
